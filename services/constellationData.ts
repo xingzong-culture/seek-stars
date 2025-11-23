@@ -3,9 +3,10 @@ import { ConstellationData, Direction } from '../types';
 // In a real backend scenario, these would be paths to local assets like '/images/beasts/jiao.png'
 // Here we use deterministic URLs that act as our "stored" assets.
 const getStaticAssetUrl = (animal: string, element: string, seed: number) => {
-  const prompt = `Chinese mythical divine beast ${animal} representing ${element} element, traditional ink painting style, masterpiece, ethereal, mysterious, dark background`;
+  // Updated Prompt: 3D, C4D, Pop Mart Style, Guochao, Festive
+  const prompt = `cute 3D chinese mythical beast ${animal} representing ${element} element, pop mart style, blind box toy design, C4D, octane render, clay texture, vibrant colors, glowing accessories, festive atmosphere, clean dark blue background, masterpiece, 8k`;
   const encoded = encodeURIComponent(prompt);
-  return `https://image.pollinations.ai/prompt/${encoded}?width=800&height=600&seed=${seed}&nologo=true`;
+  return `https://image.pollinations.ai/prompt/${encoded}?width=800&height=800&seed=${seed}&nologo=true`;
 };
 
 // The "Backend" Database
@@ -142,7 +143,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
     direction: Direction.NORTH,
     description: '虚星造作主卓灾，男女孤眠不唱乖。内乱风声无礼节，儿孙媳妇伴墙开。',
     poem: '虽有波折，终能积聚。',
-    fortune: '虚宿象征着空虚与充盈的辩证。你的人生可能经历过一些起伏与波折，但这些经历都是宝贵的财富。你有着极强的适应能力，能在逆境中寻找生机，未来必将由虚转实，富贵盈门。',
+    fortune: '虚宿象征着空虚与充盈的辩证。你人生可能经历过一些起伏，但这些经历都是宝贵的财富。你有着极强的适应能力，能在逆境中寻找生机，未来必将由虚转实，富贵盈门。',
     imageUrl: getStaticAssetUrl('Mystical Rat', 'Sun', 110),
   },
   {

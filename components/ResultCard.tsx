@@ -9,94 +9,93 @@ const ResultCard: React.FC<ResultCardProps> = ({ data }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
 
   return (
-    <div className="relative w-full max-w-lg mx-auto perspective-1000 animate-fade-in">
-      {/* Decorative Border Container */}
-      <div className="relative bg-stone-100 rounded-lg overflow-hidden shadow-2xl border-8 border-stone-800">
+    <div className="relative w-full max-w-lg mx-auto perspective-1000 animate-fade-in px-4 pb-8">
+      
+      {/* Main Card Container - "Palace" Style */}
+      <div className="relative bg-red-950 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.6)] border-4 border-amber-600">
         
-        {/* Inner Border */}
-        <div className="absolute inset-0 border-2 border-amber-600/30 pointer-events-none m-2 rounded-sm z-20"></div>
+        {/* Gold Ornament Patterns (Corner Decor) */}
+        <div className="absolute top-0 left-0 w-24 h-24 bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-amber-500/20 via-transparent to-transparent z-20"></div>
+        <div className="absolute bottom-0 right-0 w-24 h-24 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-amber-500/20 via-transparent to-transparent z-20"></div>
 
-        {/* Header Section */}
-        <div className="bg-stone-900 text-amber-500 p-6 text-center relative overflow-hidden z-30">
-            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
-            <h3 className="text-sm font-serif tracking-[0.5em] uppercase opacity-80 mb-2">{data.direction}</h3>
-            <h1 className="text-5xl font-calligraphy text-amber-400 drop-shadow-lg z-10 relative">{data.fullName}</h1>
+        {/* --- Header Section (Name) --- */}
+        <div className="bg-[#450a0a] border-b-4 border-amber-600 p-4 text-center relative z-10">
+            {/* Pattern Overlay */}
+            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+            
+            <h3 className="text-amber-200 text-xs font-serif tracking-[0.6em] uppercase mb-1">{data.direction}</h3>
+            <h1 className="text-4xl md:text-5xl font-calligraphy text-transparent bg-clip-text bg-gradient-to-b from-amber-200 to-amber-500 drop-shadow-md py-1">
+              {data.fullName}
+            </h1>
         </div>
 
-        {/* Image Section (Divine Beast) */}
-        <div className="relative h-80 w-full overflow-hidden bg-stone-900 group">
-          {/* Loading State for Image */}
+        {/* --- Image Section (The "Blind Box" Character) --- */}
+        <div className="relative aspect-[4/5] w-full bg-gradient-to-b from-[#0f172a] to-[#1e1b4b] overflow-hidden group border-b-4 border-amber-600">
+          
+          {/* Loading Placeholder */}
           {!imgLoaded && (
-             <div className="absolute inset-0 flex items-center justify-center text-amber-700/50 font-serif animate-pulse">
-                神兽显形中...
+             <div className="absolute inset-0 flex flex-col items-center justify-center text-amber-500/50 font-serif gap-2 animate-pulse">
+                <div className="w-12 h-12 rounded-full border-2 border-amber-500/30 border-t-amber-500 animate-spin"></div>
+                <span>神兽唤醒中...</span>
              </div>
           )}
-          {/* 
-             In a real backend scenario, src would be a relative path like "/assets/beasts/jiao.jpg".
-             Here we use the static URL provided by our data service.
-          */}
+          
+          {/* Main Image */}
           <img 
             src={data.imageUrl} 
             alt={data.fullName}
             onLoad={() => setImgLoaded(true)}
-            className={`w-full h-full object-cover transition-all duration-1000 ease-in-out ${imgLoaded ? 'opacity-90 scale-100' : 'opacity-0 scale-105'} group-hover:scale-110`}
+            className={`w-full h-full object-cover transition-all duration-1000 ease-out ${imgLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
           />
-          {/* Subtle gradient for text readability at bottom */}
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-stone-900/90 to-transparent pointer-events-none"></div>
-          
-          {/* Element Badge */}
-          <div className="absolute top-4 right-4 w-12 h-12 rounded-full border-2 border-amber-500/50 flex items-center justify-center bg-stone-900/80 text-amber-500 font-serif text-xl font-bold shadow-lg backdrop-blur-sm z-20">
-            {data.element}
+
+          {/* Floating Element Badge */}
+          <div className="absolute top-4 right-4 w-14 h-14">
+             {/* Badge Body */}
+             <div className="w-full h-full rounded-lg bg-red-900/90 border-2 border-amber-400 shadow-lg flex items-center justify-center rotate-3 transform hover:rotate-0 transition-transform">
+                <span className="text-amber-100 font-calligraphy text-2xl drop-shadow-md">{data.element}</span>
+             </div>
+             {/* Badge Glow */}
+             <div className="absolute -inset-2 bg-amber-500 rounded-lg blur-lg opacity-30 -z-10"></div>
           </div>
-          
-          {/* Animal Label */}
-          <div className="absolute bottom-4 left-4 text-stone-200 font-calligraphy text-2xl z-20 drop-shadow-md">
-             {data.animal}神
+
+          {/* Bottom Gradient for Text */}
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-red-950/90 via-red-950/50 to-transparent pointer-events-none"></div>
+
+          {/* Animal Name Tag */}
+          <div className="absolute bottom-4 left-4 z-20">
+             <div className="px-4 py-1 bg-amber-500 text-red-950 font-bold font-serif text-lg rounded-full shadow-lg border border-amber-200">
+               {data.animal}神
+             </div>
           </div>
         </div>
 
-        {/* Content Body */}
-        <div className="p-8 pt-6 bg-stone-100 relative">
+        {/* --- Content Body (Scroll) --- */}
+        <div className="p-6 bg-[#2a0a0a] relative">
           
-          {/* Traditional Poem */}
-          <div className="text-center mb-8">
-            <div className="inline-block border-t border-b border-stone-300 py-2 px-6">
-              <p className="text-stone-800 font-serif text-lg italic">"{data.poem}"</p>
-            </div>
+          {/* Poem */}
+          <div className="mb-6 relative">
+             <div className="absolute -left-2 top-0 bottom-0 w-1 bg-amber-700/50 rounded"></div>
+             <p className="pl-4 text-amber-100/80 font-serif italic leading-relaxed">
+               "{data.poem}"
+             </p>
           </div>
 
-          {/* Description Grid */}
-          <div className="grid grid-cols-1 gap-6 mb-8">
-            {/* Traditional Description */}
-            <div className="bg-stone-200/50 p-4 rounded-lg border-l-4 border-stone-600">
-              <h4 className="text-xs font-bold text-stone-500 uppercase tracking-widest mb-1">古诀</h4>
-              <p className="text-stone-700 font-serif text-sm leading-relaxed">{data.description}</p>
-            </div>
-
-            {/* Pre-stored Fortune (Formerly AI) */}
-            <div className="bg-amber-50/80 p-4 rounded-lg border-l-4 border-amber-600 relative overflow-hidden">
-              <h4 className="text-xs font-bold text-amber-800 uppercase tracking-widest mb-1 flex items-center gap-2">
-                星宿启示
-              </h4>
-              <p className="text-stone-800 font-serif text-sm leading-relaxed min-h-[80px]">
+          {/* Fortune Box */}
+          <div className="bg-[#450a0a] rounded-xl p-4 border border-amber-800/50 relative">
+             <div className="flex items-center gap-2 mb-2 pb-2 border-b border-amber-900/50">
+                <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                <h4 className="text-amber-400 font-bold text-sm tracking-widest">星宿启示</h4>
+             </div>
+             <p className="text-amber-100/90 font-serif text-sm leading-7 text-justify">
                 {data.fortune}
-              </p>
-              <div className="absolute -right-4 -bottom-4 text-9xl text-amber-200 opacity-20 font-calligraphy pointer-events-none select-none">
-                {data.name}
-              </div>
-            </div>
+             </p>
           </div>
 
-          {/* Footer */}
-          <div className="text-center">
-             <div className="text-[10px] text-stone-400 uppercase tracking-widest">Star Destiny Record</div>
-          </div>
         </div>
       </div>
       
-      {/* Shine Effects */}
-      <div className="absolute -top-10 -right-10 w-40 h-40 bg-amber-500 blur-[100px] opacity-20 pointer-events-none"></div>
-      <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-500 blur-[100px] opacity-20 pointer-events-none"></div>
+      {/* Background Glows for the Card */}
+      <div className="absolute top-10 left-10 right-10 bottom-10 bg-amber-500/10 blur-[80px] -z-10"></div>
     </div>
   );
 };
