@@ -5,6 +5,7 @@ import InputForm from './components/InputForm';
 import ResultCard from './components/ResultCard';
 import CoverPage from './components/CoverPage';
 import WeComAuth from './components/WeComAuth';
+import WecomConfigCheck from './components/WecomConfigCheck';
 import { getConstellationByIndex } from './services/constellationData';
 import { saveToBackend } from './services/sheetService';
 
@@ -16,6 +17,7 @@ const App: React.FC = () => {
   const [wecomUser, setWeComUser] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [configReady, setConfigReady] = useState(false);
 
   // Load from local storage on mount
   useEffect(() => {
@@ -84,8 +86,18 @@ const App: React.FC = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const isWeComEnabled = urlParams.has('wecom') && urlParams.get('wecom') === 'true';
 
-  // Show WeCom authentication only if explicitly enabled
-  if (isWeComEnabled && authLoading) {
+  // Handle config ready
+  const handleConfigReady = (config: any) => {
+    setConfigReady(true);
+  };
+
+  // Show config check if WeCom is enabled but config is not ready
+  if (isWeComEnabled && !configReady) {
+    return <WecomConfigCheck onConfigReady={handleConfigReady} />;
+  }
+
+  // Show WeCom authentication only if explicitly enabled and config is ready
+  if (isWeComEnabled && authLoading && configReady) {
     return (
       <WeComAuth 
         onAuthSuccess={handleWeComAuthSuccess}

@@ -17,11 +17,32 @@ interface WeComDepartment {
   order: number[];
 }
 
-// 企业微信配置
+// 企业微信配置 - 需要从实际配置中获取
 const WECHAT_WORK_CONFIG = {
-  corpId: process.env.VUE_APP_CORP_ID || '', // 企业ID
-  agentId: process.env.VUE_APP_AGENT_ID || '', // 应用ID
+  corpId: '', // 企业ID - 需要配置
+  agentId: '', // 应用ID - 需要配置
   jsApiList: ['hideOptionMenu', 'showOptionMenu', 'closeWindow'], // JS-SDK接口列表
+};
+
+// 从全局配置获取企业微信信息
+const getWeComConfig = () => {
+  // 尝试从多个来源获取配置
+  const corpId = 
+    window.WECOM_CORP_ID || 
+    (window.WECHAT_WORK_CONFIG && window.WECHAT_WORK_CONFIG.corpId) ||
+    '';
+    
+  const agentId = 
+    window.WECOM_AGENT_ID || 
+    (window.WECHAT_WORK_CONFIG && window.WECHAT_WORK_CONFIG.agentId) ||
+    '';
+    
+  const corpSecret = 
+    window.WECOM_CORP_SECRET || 
+    (window.WECHAT_WORK_CONFIG && window.WECHAT_WORK_CONFIG.corpSecret) ||
+    '';
+    
+  return { corpId, agentId, corpSecret };
 };
 
 // 检查是否在企业微信环境中
@@ -32,8 +53,15 @@ export const isWeChatWork = (): boolean => {
 
 // 获取企业微信授权URL
 export const getWeChatWorkAuthUrl = (redirectUri: string, state: string = ''): string => {
+  const config = getWeComConfig();
+  
+  if (!config.corpId || config.corpId === '您的企业ID') {
+    console.error('企业微信配置未设置，请在环境变量中配置企业ID');
+    return '#';
+  }
+  
   const params = new URLSearchParams({
-    appid: WECHAT_WORK_CONFIG.corpId,
+    appid: config.corpId,
     redirect_uri: encodeURIComponent(redirectUri),
     response_type: 'code',
     scope: 'snsapi_base',
