@@ -36,9 +36,9 @@ const WecomConfigCheck: React.FC<WecomConfigCheckProps> = ({ onConfigReady }) =>
                      '';
 
     const status = {
-      corpId: corpId && corpId.length > 0 && corpId !== 'wwxxxxxxxxxxxxxxxx',
+      corpId: corpId && corpId.length > 0 && !corpId.includes('xxxxxxxx'),
       agentId: agentId && agentId.length > 0 && agentId !== '1000001',
-      corpSecret: corpSecret && corpSecret.length > 0 && corpSecret !== 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+      corpSecret: corpSecret && corpSecret.length > 0 && !corpSecret.includes('xxxxxxxx'),
       isWeChatWork,
     };
 
@@ -53,7 +53,7 @@ const WecomConfigCheck: React.FC<WecomConfigCheckProps> = ({ onConfigReady }) =>
 
   const formatConfigValue = (value: string, type: string) => {
     if (!value) return '未配置';
-    if (value.includes('xxxx')) return '请配置';
+    if (value.includes('xxxxxxxx')) return '请配置';
     if (type === 'corpId' && value.startsWith('ww')) {
       return `${value.substring(0, 8)}****${value.substring(value.length - 4)}`;
     }

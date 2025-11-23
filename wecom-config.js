@@ -31,3 +31,4 @@ if (typeof module !== 'undefined' && module.exports) {
 console.log('企业微信配置已加载');
 console.log('企业ID:', WECHAT_WORK_CONFIG.corpId);
 console.log('应用ID:', WECHAT_WORK_CONFIG.agentId);
+console.log('配置对象:', JSON.stringify(WECHAT_WORK_CONFIG, null, 2));
