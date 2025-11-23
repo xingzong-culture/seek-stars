@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星宿查询 - 二维码生成器</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+        }
+        .qrcodes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .qr-item {
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #f0f0f0;
+            border-radius: 15px;
+            background: #fafafa;
+        }
+        .qr-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        .qr-desc {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .qrcode {
+            display: inline-block;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        #qrcode1, #qrcode2 {
+            margin: 0 auto;
+        }
+        .instructions {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        .instructions h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .step {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .step-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 星宿查询 - 二维码访问指南</h1>
+        
+        <div class="qrcodes">
+            <div class="qr-item">
+                <div class="qr-title">🌐 标准版本</div>
+                <div class="qr-desc">直接访问星宿查询系统，适合日常使用</div>
+                <div class="qrcode">
+                    <div id="qrcode1"></div>
+                </div>
+            </div>
+            
+            <div class="qr-item">
+                <div class="qr-title">🏢 企业微信版本</div>
+                <div class="qr-desc">企业微信专用链接，扫码后请在浏览器中打开</div>
+                <div class="qrcode">
+                    <div id="qrcode2"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h2>📋 使用说明</h2>
+            
+            <div class="step">
+                <div class="step-title">步骤 1：扫描二维码</div>
+                <div>使用任意扫码工具扫描上方二维码</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-title">步骤 2：选择打开方式</div>
+                <div>在企业微信中扫描后，选择"用浏览器打开"</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-title">步骤 3：开始使用</div>
+                <div>进入页面后即可开始查询您的二十八星宿</div>
+            </div>
+            
+            <div class="note">
+                <strong>⚠️ 重要提醒：</strong><br>
+                由于企业微信安全策略限制，无法在企业微信内直接获取用户信息。
+                推荐使用浏览器访问，功能更加完整稳定。
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="https://carol-huang00.github.io/seek-stars/" class="btn" target="_blank">🌟 立即体验</a>
+            <a href="https://carol-huang00.github.io/seek-stars/?wecom=true" class="btn" target="_blank">🏢 企业微信版</a>
+        </div>
+    </div>
+
+    <script>
+        // 生成标准版本二维码
+        new QRCode(document.getElementById("qrcode1"), {
+            text: "https://carol-huang00.github.io/seek-stars/",
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        // 生成企业微信版本二维码
+        new QRCode(document.getElementById("qrcode2"), {
+            text: "https://carol-huang00.github.io/seek-stars/?wecom=true",
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        // 添加下载功能
+        function downloadQRCode(elementId, filename) {
+            const canvas = document.querySelector(`#${elementId} canvas`);
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = canvas.toDataURL();
+                link.click();
+            }
+        }
+
+        // 为二维码添加点击下载功能
+        document.getElementById('qrcode1').addEventListener('click', () => {
+            downloadQRCode('qrcode1', '星宿查询-标准版.png');
+        });
+
+        document.getElementById('qrcode2').addEventListener('click', () => {
+            downloadQRCode('qrcode2', '星宿查询-企业微信版.png');
+        });
+    </script>
+</body>
+</html>
