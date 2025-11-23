@@ -3,13 +3,13 @@
 
 const WECHAT_WORK_CONFIG = {
   // 企业ID - 在企业微信后台「我的企业」→「企业信息」中查看
-  corpId: 'wwxxxxxxxxxxxxxxxx', // 替换为您的企业ID
+  corpId: 'wwf75e842fcde0ba28', // 替换为您的企业ID
   
   // 应用ID - 在企业微信后台「应用管理」→「自建应用」中查看
-  agentId: '1000001', // 替换为您的应用ID
+  agentId: '1000031', // 替换为您的应用ID
   
   // 应用Secret - 在企业微信后台「应用管理」→「自建应用」→「凭证与基础信息」中查看
-  corpSecret: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', // 替换为您的应用Secret
+  corpSecret: 'ko6yZpXHzDLhoPOy3qgvOW1OMFOK0UkuCF8C48lm6yg', // 替换为您的应用Secret
   
   // JS-SDK 接口列表
   jsApiList: ['hideOptionMenu', 'showOptionMenu', 'closeWindow'],
