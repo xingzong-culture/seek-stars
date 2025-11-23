@@ -133,14 +133,41 @@ const WeComAuth: React.FC<WeComAuthProps> = ({ onAuthSuccess, onAuthError }) => 
             </svg>
           </div>
           <h1 className="text-2xl font-serif text-amber-200 mb-2">企业微信认证</h1>
-          <p className="text-amber-500/60 font-serif">请使用企业微信扫码访问此页面</p>
+          <p className="text-amber-500/60 font-serif mb-4">请使用企业微信扫码访问此页面</p>
+          <div className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-3 mb-4">
+            <p className="text-amber-400/80 text-xs font-serif">
+              💡 提示：您也可以选择标准访问，无需企业微信认证
+            </p>
+          </div>
         </div>
 
         {!isWeChatWork() && (
-          <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 mb-6">
-            <p className="text-red-400 text-sm font-serif">
-              检测到不在企业微信环境中，请使用企业微信访问
+          <div className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-4 mb-6">
+            <p className="text-amber-400 text-sm font-serif mb-3">
+              检测到不在企业微信环境中
             </p>
+            <p className="text-amber-500/80 text-xs font-serif mb-4">
+              您可以选择继续访问或使用企业微信重新访问
+            </p>
+            <div className="space-x-3">
+              <button
+                onClick={() => {
+                  // Remove wecom parameter and continue with standard access
+                  const url = new URL(window.location.href);
+                  url.searchParams.delete('wecom');
+                  window.location.href = url.toString();
+                }}
+                className="bg-amber-600/20 border border-amber-500/30 text-amber-200 px-6 py-2 rounded-full hover:bg-amber-600/30 transition-all duration-300 font-serif text-sm"
+              >
+                继续标准访问
+              </button>
+              <button
+                onClick={handleRetry}
+                className="bg-blue-600/20 border border-blue-500/30 text-blue-200 px-6 py-2 rounded-full hover:bg-blue-600/30 transition-all duration-300 font-serif text-sm"
+              >
+                使用企业微信
+              </button>
+            </div>
           </div>
         )}
 

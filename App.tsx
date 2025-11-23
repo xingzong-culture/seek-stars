@@ -80,10 +80,11 @@ const App: React.FC = () => {
     return <div className="min-h-screen bg-[#020617] flex items-center justify-center text-amber-500 font-serif">加载中...</div>;
   }
 
-  // Check if WeCom authentication is enabled (via environment variable)
-  const isWeComEnabled = process.env.NODE_ENV === 'production' || window.location.search.includes('wecom=true');
+  // Check if WeCom authentication is explicitly enabled via URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const isWeComEnabled = urlParams.has('wecom') && urlParams.get('wecom') === 'true';
 
-  // Show WeCom authentication if enabled
+  // Show WeCom authentication only if explicitly enabled
   if (isWeComEnabled && authLoading) {
     return (
       <WeComAuth 
@@ -94,7 +95,7 @@ const App: React.FC = () => {
   }
 
   // Show authentication error
-  if (authError) {
+  if (isWeComEnabled && authError) {
     return (
       <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4">
         <div className="text-center max-w-md">
@@ -106,10 +107,28 @@ const App: React.FC = () => {
             >
               重新尝试
             </button>
+            <button
+              onClick={() => {
+                // Remove wecom parameter and reload
+                const url = new URL(window.location.href);
+                url.searchParams.delete('wecom');
+                window.location.href = url.toString();
+              }}
+              className="ml-3 bg-blue-600/20 border border-blue-500/30 text-blue-200 px-6 py-2 rounded-full hover:bg-blue-600/30 transition-all duration-300 font-serif"
+            >
+              标准访问
+            </button>
           </div>
         </div>
       </div>
     );
+  }
+
+  // Reset auth states if WeCom is not enabled
+  if (!isWeComEnabled) {
+    setAuthLoading(false);
+    setAuthError(null);
+    setWeComUser(null);
   }
 
   // 1. Show Cover Page first
