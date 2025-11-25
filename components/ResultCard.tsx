@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ConstellationData, Direction } from '../types';
 import { CONSTELLATIONS, getConstellationByIndex } from '../services/constellationData';
 import { generateStarImage } from '../services/geminiService';
@@ -11,8 +11,6 @@ interface ResultCardProps {
 }
 
 const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isDownloading, setIsDownloading] = useState(false);
   const [isImgLoaded, setIsImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
@@ -21,12 +19,20 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
   const [aiImage, setAiImage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Fallback Logic
-  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    if (!imgError) {
-      setImgError(true);
-    }
-  };
+  // 1. Check Image Load
+  useEffect(() => {
+    let isMounted = true;
+    const img = new Image();
+    img.src = data.imageUrl;
+    img.onload = () => {
+      if (isMounted) setIsImgLoaded(true);
+    };
+    img.onerror = () => {
+      if (isMounted) setImgError(true);
+    };
+    return () => { isMounted = false; };
+  }, [data.imageUrl]);
+
 
   // Theme Logic
   const getThemeStyles = (dir: Direction) => {
@@ -39,7 +45,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
           nameText: 'text-[#ffcccc]', 
           titleGradient: 'bg-gradient-to-b from-[#ffffff] via-[#ffcccc] to-[#ff3333]',
           titleShadow: 'drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] drop-shadow-[0_0_15px_rgba(255,50,50,0.6)]',
-          solidColor: '#ff3333', // For Screenshot
           subTitle: 'text-[#ff9999]',
           accentBox: 'border-[#ff3333]/30 bg-[#ff3333]/10'
         };
@@ -51,7 +56,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
           nameText: 'text-[#ffe0b2]',
           titleGradient: 'bg-gradient-to-b from-[#ffffff] via-[#ffe0b2] to-[#ff8800]',
           titleShadow: 'drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] drop-shadow-[0_0_15px_rgba(255,160,0,0.6)]',
-          solidColor: '#ff8800',
           subTitle: 'text-[#ffcc80]',
           accentBox: 'border-[#ff8800]/30 bg-[#ff8800]/10'
         };
@@ -63,7 +67,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
           nameText: 'text-[#cce5ff]',
           titleGradient: 'bg-gradient-to-b from-[#ffffff] via-[#cce5ff] to-[#2979ff]',
           titleShadow: 'drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] drop-shadow-[0_0_15px_rgba(40,120,255,0.6)]',
-          solidColor: '#2979ff',
           subTitle: 'text-[#99ccff]',
           accentBox: 'border-[#2979ff]/30 bg-[#2979ff]/10'
         };
@@ -75,7 +78,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
           nameText: 'text-[#ccfbf1]',
           titleGradient: 'bg-gradient-to-b from-[#ffffff] via-[#ccfbf1] to-[#00bfa5]',
           titleShadow: 'drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] drop-shadow-[0_0_15px_rgba(29,233,182,0.6)]',
-          solidColor: '#00bfa5',
           subTitle: 'text-[#80ffdb]',
           accentBox: 'border-[#00bfa5]/30 bg-[#00bfa5]/10'
         };
@@ -87,7 +89,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
           nameText: 'text-white',
           titleGradient: 'bg-gradient-to-b from-white to-gray-400',
           titleShadow: 'drop-shadow-md',
-          solidColor: '#ffffff',
           subTitle: 'text-gray-300',
           accentBox: 'border-white/20 bg-white/5'
         };
@@ -96,46 +97,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
 
   const theme = getThemeStyles(data.direction);
 
-  const handleDownload = async () => {
-    if (!cardRef.current || isDownloading) return;
-    setIsDownloading(true);
-
-    try {
-      // Small delay to ensure rendering stability
-      await new Promise(r => setTimeout(r, 100));
-
-      // @ts-ignore - html2canvas is loaded via CDN
-      const canvas = await window.html2canvas(cardRef.current, {
-        useCORS: true,       // Critical for images
-        allowTaint: true,    // Allowed to capture tainted images
-        scale: 2,            // High res
-        backgroundColor: null, // Transparent bg where possible
-        logging: false,
-        onclone: (clonedDoc: Document) => {
-           // 🛠️ FIX: Manually fix the Gradient Text for screenshot
-           // html2canvas doesn't support 'bg-clip: text', so we force a solid color on the clone.
-           const titleEl = clonedDoc.getElementById('star-title-text');
-           if (titleEl) {
-             titleEl.style.backgroundImage = 'none';
-             titleEl.style.webkitBackgroundClip = 'initial';
-             titleEl.style.webkitTextFillColor = 'initial';
-             titleEl.style.color = theme.solidColor; // Use the theme's solid color
-           }
-        }
-      });
-
-      const link = document.createElement('a');
-      link.download = `暖冬节_${data.fullName}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    } catch (err) {
-      console.error("Download failed", err);
-      alert("下载失败，请尝试长按图片保存");
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
   const handleGenerateAiImage = async () => {
     if (isGenerating) return;
     setIsGenerating(true);
@@ -143,7 +104,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
 
     const targetStar = getConstellationByIndex(workshopId);
     
-    // Construct a high-quality prompt based on Game Art style
     const prompt = `High fantasy game character art, masterpiece, 8k resolution, best quality, close-up shot of ${targetStar.fullName} (Chinese constellation), represented as a majestic ${targetStar.animal} spirit, dynamic pose, glowing magical energy, detailed fur and scales, traditional chinese cloud patterns on body, floating in deep dark starry night sky, cinematic lighting, ${targetStar.direction}ern mythology theme colors, bioluminescence.`;
 
     const img = await generateStarImage(prompt);
@@ -167,7 +127,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
       
       {/* --- Main Result Card --- */}
       <div 
-        ref={cardRef}
         className={`
           relative w-full rounded-[20px] p-1.5 shadow-2xl
           ${theme.wrapper} border-[3px]
@@ -209,10 +168,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
                   src={data.imageUrl} 
                   alt={data.name} 
                   className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${isImgLoaded ? 'opacity-100' : 'opacity-0'}`}
-                  onLoad={() => setIsImgLoaded(true)}
-                  onError={handleImgError}
-                  // IMPORTANT: Do NOT use crossOrigin here if images are local or standard HTTP.
-                  // If using external CORS-enabled images, you might need it, but for local download, removing it is safer.
+                  onError={() => setImgError(true)}
                 />
              )}
              
@@ -228,7 +184,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
 
              {/* Floating Title Overlay */}
              <div className="absolute bottom-5 left-0 w-full text-center z-10 flex flex-col items-center">
-                {/* ID added for html2canvas targeting */}
                 <h1 id="star-title-text" className={`
                   font-calligraphy text-6xl mb-2 scale-y-110
                   text-transparent bg-clip-text
@@ -254,7 +209,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
             flex flex-col items-center justify-center py-5 rounded-lg border ${theme.accentBox}
             backdrop-blur-sm relative overflow-hidden
           `}>
-             {/* Subtle Glow Background */}
              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-30"></div>
              
              <span className={`relative text-xl font-serif font-bold ${theme.nameText} drop-shadow-sm tracking-widest leading-relaxed text-center px-4`}>
@@ -277,46 +231,20 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
 
       {/* Buttons Container */}
       <div className="flex flex-col gap-3">
-        {/* Main: Download Button */}
-        <button 
-          onClick={handleDownload}
-          disabled={isDownloading}
-          className={`
-            w-full py-3 rounded-xl relative overflow-hidden group
-            bg-gradient-to-r from-purple-700 to-indigo-800
-            border border-purple-400/50
-            text-white font-bold text-lg tracking-widest
-            shadow-lg
-            transition-all duration-300 transform active:scale-[0.98]
-            flex items-center justify-center gap-2
-            ${isDownloading ? 'opacity-70 cursor-wait' : 'hover:scale-[1.02]'}
-          `}
-        >
-          {isDownloading ? (
-             <span>生成中...</span>
-          ) : (
-             <>
-               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#ffd700]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-               </svg>
-               <span>下载卡片</span>
-             </>
-          )}
-        </button>
-
-        {/* Retest Button (Ghost Style) */}
         {onRetest && (
           <button 
             onClick={onRetest}
             className="
-              w-full py-3 mt-1
-              text-white/40 text-sm font-serif tracking-widest
-              hover:text-[#ffd700] hover:bg-white/5
-              rounded-lg transition-colors duration-300
+              w-full py-4 rounded-xl relative overflow-hidden group
+              bg-gradient-to-r from-[#7c3aed] to-[#5b21b6]
+              border border-[#7c3aed]/30
+              text-white font-bold text-lg tracking-widest
+              shadow-[0_0_20px_rgba(124,58,237,0.3)]
+              transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]
               flex items-center justify-center gap-2
             "
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             再测一次
@@ -333,7 +261,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
          
          <div className="bg-[#1a1c24] border border-white/10 rounded-xl p-4 flex flex-col gap-4">
             <p className="text-xs text-gray-400">选择任意星宿，召唤独一无二的专属神兽。</p>
-            
             <select 
                value={workshopId}
                onChange={(e) => setWorkshopId(Number(e.target.value))}
@@ -343,7 +270,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
                   <option key={c.id} value={c.id}>{c.fullName} ({c.direction})</option>
                ))}
             </select>
-
             <button
                onClick={handleGenerateAiImage}
                disabled={isGenerating}
@@ -357,7 +283,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, userName, onRetest }) => 
             >
                {isGenerating ? 'AI 绘制中...' : '✨ AI 祈愿 (生成)'}
             </button>
-
             {aiImage && (
                <div className="flex flex-col gap-3 mt-2 animate-fade-in">
                   <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden border border-white/20">

@@ -72,21 +72,28 @@ export const saveToBackend = async (record: UserRecord, constellationName: strin
   // ---------------------------------------------------------
   // 通道 1：发送给“全部记录” (无条件发送，用于统计热度)
   // ---------------------------------------------------------
+  // 只要点击查询，就发送，不进行任何去重判断
   await sendToFeishu(WEBHOOK_URL_ALL, payload, "全部记录表");
 
   // ---------------------------------------------------------
-  // 通道 2：发送给“去重记录” (仅限设备首次，用于统计人数)
+  // 通道 2：发送给“去重记录” (严格基于设备的唯一性)
   // ---------------------------------------------------------
-  const SYNC_KEY_UNIQUE = 'star_destiny_synced_unique_v2'; // 升级Key以重置之前的测试状态
+  // 🔥 版本号 v5_final: 强制清空所有人的历史状态，重新开始计数
+  const SYNC_KEY_UNIQUE = 'star_destiny_synced_unique_v5_final'; 
   const hasSyncedUnique = localStorage.getItem(SYNC_KEY_UNIQUE);
 
   if (!hasSyncedUnique) {
-    console.log("✨ 检测到该设备首次提交，正在发送给去重表...");
-    await sendToFeishu(WEBHOOK_URL_UNIQUE, payload, "去重记录表");
+    console.log("✨ [去重逻辑] 检测到该设备首次提交，锁定设备并发送...");
     
-    // 标记为已同步，下次不再发送给去重表
+    // 🚨 核心修正：先锁定，再发送！
+    // 只要代码执行到这里，立即标记该设备已记录。
+    // 无论用户之后改成什么名字，或者网络是否延迟，
+    // 第二次点击时，hasSyncedUnique 必然为 true，从而跳过发送。
     localStorage.setItem(SYNC_KEY_UNIQUE, 'true');
+
+    // 发送数据
+    await sendToFeishu(WEBHOOK_URL_UNIQUE, payload, "去重记录表");
   } else {
-    console.log("🔒 该设备已在去重表中记录过，跳过通道 2");
+    console.log("🔒 [去重逻辑] 该设备已记录过 (Key已存在)，本次仅在前端展示，不发送给去重表。");
   }
 };

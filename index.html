@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>暖冬节 | 寻找守护星</title>
+    <!-- Keep Tailwind CDN for simplicity in this setup, though PostCSS is recommended for prod -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;700&family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
@@ -76,9 +76,14 @@
         cursor: pointer;
       }
     </style>
-  <script type="importmap">
+    <!-- Removed ImportMap as we are now using Vite build process -->
+    <!-- Added html2canvas via CDN as backup, but package.json dep handles build -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script type="importmap">
 {
   "imports": {
+    "vite": "https://aistudiocdn.com/vite@^7.2.4",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
     "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
@@ -90,5 +95,7 @@
   <body>
     <div class="bg-constellation"></div>
     <div id="root"></div>
+    <!-- Vite Entry Point -->
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>
